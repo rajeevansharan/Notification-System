@@ -1,6 +1,6 @@
 package com.example.notification_system.controller;
 
-import com.example.notification_system.EmailRequestDTO;
+import com.example.notification_system.dto.EmailRequestDTO;
 import com.example.notification_system.service.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
