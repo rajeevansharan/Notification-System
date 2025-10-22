@@ -1,4 +1,4 @@
-package com.example.notification_system.dto;
+package com.example.notification_system.Dto;
 
 import lombok.AllArgsConstructor;
 
