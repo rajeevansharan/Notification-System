@@ -1,4 +1,4 @@
-package com.example.notification_system;
+package com.example.notification_system.Config;
 import com.twilio.Twilio;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
