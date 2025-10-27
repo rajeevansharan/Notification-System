@@ -1,6 +1,7 @@
 package com.example.notification_system.Service;
 
 import com.example.notification_system.Config.RabbitMQConfig;
+import com.example.notification_system.Dto.EmailRequestDTO;
 import com.example.notification_system.Entity.EmailLog;
 import com.example.notification_system.Repository.EmailLogRepository;
 import com.sendgrid.Method;
@@ -11,7 +12,6 @@ import com.sendgrid.helpers.mail.Mail;
 import com.sendgrid.helpers.mail.objects.Content;
 import com.sendgrid.helpers.mail.objects.Email;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -25,25 +25,23 @@ public class EmailService {
     @Autowired
     private EmailLogRepository emailLogRepository;
 
-    @Autowired
-    private RabbitTemplate rabbitTemplate;
-
     @Value("${sendgrid.api.key}")
     private String sendGridApiKey;
 
     @RabbitListener(queues = RabbitMQConfig.QUEUE_NAME)
-    public String sendEmail(String toEmail, String subject, String body) {
-        Email from = new Email("petergwenstacy123@gmail.com");
-        Email to = new Email(toEmail);
-        Content content = new Content("text/plain", body);
-        Mail mail = new Mail(from, subject, to, content);
+    public void sendEmail(EmailRequestDTO emailRequest) {
+        Email from = new Email("petergwenstacy123@gmail.com"); // sender
+        Email to = new Email(emailRequest.getToMail());
+        Content content = new Content("text/plain", emailRequest.getBody());
+        Mail mail = new Mail(from, emailRequest.getSubject(), to, content);
 
         SendGrid sg = new SendGrid(sendGridApiKey);
         Request request = new Request();
+
         EmailLog emailLog = new EmailLog();
-        emailLog.setToMail(toEmail);
-        emailLog.setSubject(subject);
-        emailLog.setBody(body);
+        emailLog.setToMail(emailRequest.getToMail());
+        emailLog.setSubject(emailRequest.getSubject());
+        emailLog.setBody(emailRequest.getBody());
         emailLog.setDate(LocalDate.now());
 
         try {
@@ -55,11 +53,11 @@ public class EmailService {
             emailLog.setStaus(response.getStatusCode() == 202 ? "Success" : "Failed");
             emailLogRepository.save(emailLog);
 
-            return response.getStatusCode() + " " + response.getBody();
+            System.out.println("Email sent to " + emailRequest.getToMail() + ", Status: " + response.getStatusCode());
         } catch (IOException e) {
-            emailLog.setStaus("Error" + e.getMessage());
+            emailLog.setStaus("Error: " + e.getMessage());
             emailLogRepository.save(emailLog);
-            return "Failed to send email:" + e.getMessage();
+            System.err.println("Failed to send email to " + emailRequest.getToMail() + ": " + e.getMessage());
         }
     }
 }

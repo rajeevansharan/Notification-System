@@ -1,6 +1,5 @@
 package com.example.notification_system.Service;
 
-
 import com.example.notification_system.Config.RabbitMQConfig;
 import com.example.notification_system.Dto.EmailRequestDTO;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -13,9 +12,8 @@ public class EmailProducer {
     @Autowired
     private RabbitTemplate rabbitTemplate;
 
-
     public void sendToQueue(EmailRequestDTO dto){
-        rabbitTemplate.convertAndSend(RabbitMQConfig.QUEUE_NAME,dto);
-
+        rabbitTemplate.convertAndSend(RabbitMQConfig.QUEUE_NAME, dto);
+        System.out.println("EmailRequestDTO sent to queue for: " + dto.getToMail());
     }
 }
