@@ -1,7 +1,7 @@
 package com.example.notification_system.Controller;
 
 import com.example.notification_system.Dto.EmailRequestDTO;
-import com.example.notification_system.Service.EmailService;
+import com.example.notification_system.Service.EmailProducer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,15 +15,15 @@ import org.springframework.web.bind.annotation.RestController;
 public class EmailController {
 
     @Autowired
-    private EmailService emailService;
+    private EmailProducer emailProducer;
 
 
     @PostMapping("/send")
     public ResponseEntity<String> sendEmail(@RequestBody EmailRequestDTO emailRequestDTO) {
 
         try {
-            String response = emailService.sendEmail(emailRequestDTO.toMail, emailRequestDTO.subject, emailRequestDTO.body);
-            return ResponseEntity.ok("Email sent successfully: " + response);
+            emailProducer.sendToQueue(emailRequestDTO);
+            return ResponseEntity.ok("Email sent successfully");
         } catch (Exception e) {
 
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

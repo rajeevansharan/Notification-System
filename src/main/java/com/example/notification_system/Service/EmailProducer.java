@@ -2,7 +2,7 @@ package com.example.notification_system.Service;
 
 
 import com.example.notification_system.Config.RabbitMQConfig;
-import com.example.notification_system.Entity.EmailLog;
+import com.example.notification_system.Dto.EmailRequestDTO;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,8 +14,8 @@ public class EmailProducer {
     private RabbitTemplate rabbitTemplate;
 
 
-    public void sendToQueue(EmailLog emailLog ){
-        rabbitTemplate.convertAndSend(RabbitMQConfig.QUEUE_NAME,emailLog);
+    public void sendToQueue(EmailRequestDTO dto){
+        rabbitTemplate.convertAndSend(RabbitMQConfig.QUEUE_NAME,dto);
 
     }
 }
